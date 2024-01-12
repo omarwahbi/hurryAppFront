@@ -10,13 +10,14 @@ function UploadPage() {
 
    const videoRef = useRef(null);
    const thumbnailRef = useRef(null);
+   const [isPrivate, setIsPrivate] = useState(true);
 
    function handleSubmit(e) {
       e.preventDefault();
 
       setIsLoading(true);
 
-      if (!videoRef.current) { //
+      if (!videoRef.current) {
          setError("No video uploaded!");
          setIsLoading(false);
       }
@@ -26,8 +27,8 @@ function UploadPage() {
          setIsLoading(false);
       }
 
-      const title = e.target[1].value;
-      const description = e.target[3].value;
+      const title = e.target[3].value;
+      const description = e.target[5].value;
 
       if (!title) {
          setError("No title uploaded!");
@@ -38,6 +39,8 @@ function UploadPage() {
          setError("No description uploaded!");
          setIsLoading(false);
       }
+
+      const privacy = isPrivate ? "private" : "public";
 
       // upload data
 
@@ -59,21 +62,46 @@ function UploadPage() {
                   hidden
                />
             </label>
-            <label htmlFor="tumbnail" className="pl-10 pr-16 mx-2 flex items-center rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 border-[1px] hover:border-gray-500 cursor-pointer">
+            <label htmlFor="thumbnail" className="pl-10 pr-16 mx-2 flex items-center rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 border-[1px] hover:border-gray-500 cursor-pointer">
                <Image src="/icons/picture.png" alt="picture icon" width={30} height={30} className="mr-2" />
                Thumbnail
                <input
                   ref={thumbnailRef}
                   type="file"
-                  id="tumbnail"
-                  name="tumbnail"
-                  accept="image/jpg" // tumbnail image type
+                  id="thumbnail"
+                  name="thumbnail"
+                  accept="image/jpg" // thumbnail image type
                   hidden
                />
             </label>
          </div>
          <div className="mx-5">
             <form onSubmit={handleSubmit}>
+               <label className="block text-gray-900">Privacy</label>
+               <div className="flex mb-5 ml-1 mt-1">
+                  <label className="mr-3">
+                     <input
+                        type="radio"
+                        name="privacy"
+                        className="mr-1"
+                        value="public"
+                        checked={!isPrivate}
+                        onChange={() => setIsPrivate(false)}
+                     />
+                     Public
+                  </label>
+                  <label>
+                     <input
+                        type="radio"
+                        name="privacy"
+                        className="mr-1"
+                        value="private"
+                        checked={isPrivate}
+                        onChange={() => setIsPrivate(true)}
+                     />
+                     Private
+                  </label>
+               </div>
                <label htmlFor="title" className="w-fit block text-gray-900">Title</label>
                <input type="text" name="title" id="title" className="px-2 py-1 mb-5 block border-[1px] rounded-md w-full border-gray-300 focus:border-gray-500 active:border-gray-500 focus:outline-none active:outline-none " />
                <label htmlFor="description" className="w-fit block">Description</label>
