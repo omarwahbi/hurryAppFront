@@ -15,7 +15,7 @@
     --background-end-rgb: 0, 0, 0;
   }
 } */
-
+/* 
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,4 +24,15 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-}
+} */
+/* body {
+  background: rgb(2, 0, 36);
+  background: radial-gradient(
+    circle,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(7, 6, 94, 1) 28%,
+    rgba(9, 9, 121, 1) 54%,
+    rgba(89, 0, 255, 1) 100%
+  );
+  color: aliceblue;
+} */
