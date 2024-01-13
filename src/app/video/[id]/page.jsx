@@ -1,5 +1,6 @@
 "use client";
 
+import MessageComponent from "@/components/message";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
@@ -18,6 +19,9 @@ function VideoPage() {
    const videoRef = useRef(null);
    const [ws, setWs] = useState(null);
    const isUpdating = useRef(false);
+
+   const [messages, setMessages] = useState([{message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}, {message: "First Message", name: "Namee"}]);
+   const textInputRef = useRef(null);
    
    const [title, setTitle] = useState("Title"); // TODO: should be an empty string
    const [description, setDescription] = useState("Descriptionnnnnnnnnn jsndkjsnkjdn"); // TODO: should be an empty string
@@ -70,12 +74,16 @@ function VideoPage() {
       }
    }
 
+   function handleSendMessage() {
+      
+   }
+
    // TODO: add seek handling when back end complete
    // function handleSeek() {}
 
 
-   return <div className="overflow-hidden h-[100svh]">
-      <main className="md:w-[60%]">
+   return <div className="overflow-hidden md:w-[60%] h-[100svh]">
+      <main>
          <video
             ref={videoRef}
             width="100%"
@@ -99,7 +107,7 @@ function VideoPage() {
                   <center><Image src="/icons/live.png" alt="edit icon" width={35} height={35} className="mb-1" /></center>
                   Create Watch Party
                </button>
-               : <button className="w-fit mx-auto" onClick={(e) => setIsChatOn(p => !p)}> {/* only if it's a watch party */}
+               : <button className="w-fit mx-auto" onClick={(e) => setIsChatOn(true)}> {/* only if it's a watch party */}
                   <center><Image src="/icons/chat.png" alt="edit icon" width={35} height={35} className="mb-1" /></center>
                   Live Chat
                </button>}
@@ -107,18 +115,34 @@ function VideoPage() {
             <p className="text-lg mt-5 mb-2">Description</p>
             <p className="">{description}</p>
          </section>
-         <section className={`no-scrollbar bg-red-300 w-full px-5 absolute overflow-y-auto scroll transition-all ${isPartyText === "true" && isChatOn ? "h-full top-0 bottom-0" : "h-0"}`}>
+         <section className={`no-scrollbar bg-red-300 px-5 md:fixed absolute left-0 right-0 transition-all ${isPartyText === "true" && isChatOn ? "top-0 bottom-0 h-full" : "top-[100%] bottom-0 h-0"} md:left-[60%] md:right-0`}>
+            <div className="no-scrollbar overflow-y-scroll h-[80%] bg-blue-300">
+               {messages.map((message, i) =>
+                  <MessageComponent
+                     key={i}
+                     message={message.message /* or message.text */}
+                     username={message.name /* or message.senderName or username */}
+                  />)}
+            </div>
+            <div className=" h-10" />
             <div className={`w-full ${isPartyText === "true" && isChatOn ? "fixed bottom-0" : ""}`}>
-               <input
-                  type="text"
-                  name="message"
-                  id="message"
-                  className="w-[70%] px-2 py-1 mb-5 mr-3 border-[1px] rounded-md border-gray-300 focus:border-gray-500 active:border-gray-500 focus:outline-none active:outline-none"
-               />
-               <button className="mx-auto w-fit">Send</button>
+               <div className="mb-5 grid grid-cols-[55%_35%] md:grid-cols-1 align-middle justify-center">
+                  <input
+                     ref={textInputRef}
+                     type="text"
+                     name="message"
+                     id="message"
+                     className="w-full md:w-[35%] md:my-2 px-2 py-1 mr-3 border-[1px] rounded-md border-gray-300 focus:border-gray-500 active:border-gray-500 focus:outline-none active:outline-none"
+                  />
+                  <div className="mx-5 h-full">
+                     <button className="mr-5 px-2 h-full rounded-md w-fit bg-indigo-500">Send</button>
+                     <button className="px-2 md:py-1 h-full rounded-md w-fit bg-red-500" onClick={(e) => setIsChatOn(false)}>Close</button>
+                  </div>
+               </div>
             </div>
          </section>
       </div>
+         
    </div>;
 }
 
