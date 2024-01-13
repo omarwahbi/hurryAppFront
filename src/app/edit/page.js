@@ -1,19 +1,20 @@
 "use client";
 
+import Cookies from "js-cookie";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-function UploadPage() {
+function EditPage() {
 
    
    const searchParams = useSearchParams();
  
-   const isPartyText = searchParams.get("videoId");
+   const videoId = searchParams.get("videoId");
 
    const [error, setError] = useState("");
    const [isLoading, setIsLoading] = useState(false);
 
-   function handleSubmit(e) {
+   async function handleSubmit(e) {
       e.preventDefault();
 
       setIsLoading(true);
@@ -31,7 +32,32 @@ function UploadPage() {
          setIsLoading(false);
       }
 
-      // edit data
+      const url = "http://192.168.4.90:30010/api/v1/";
+
+      const formData2 = new FormData(); 
+
+      formData2.append("title", title);
+      formData2.append("description", description );
+
+      try {
+         const response = await axios.put(`${url}video/${videoId}`, formData2, {
+            headers: {
+               // 'Authorization': `Bearer ${Cookies.get("accessToken")}`,
+               'Content-Type': 'multipart/form-data',
+            },
+         }); 
+
+         if (response.status !== 200) return;
+
+         const data = await response.data;
+
+         router.push("/library");
+
+      } catch (error) {
+         setError("error");
+         isLoading(false);
+         return;
+      }
 
    }
 
@@ -67,4 +93,4 @@ function UploadPage() {
    </>;
 }
 
-export default UploadPage;
+export default EditPage;

@@ -1,5 +1,6 @@
 "use client";
 
+import Cookies from "js-cookie";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -30,8 +31,8 @@ function UploadPage() {
          setIsLoading(false);
       }
 
-      const title = e.target[1].value;
-      const description = e.target[3].value;
+      const title = e.target[0].value;
+      const description = e.target[1].value;
 
       if (!title) {
          setError("No title uploaded!");
@@ -46,16 +47,17 @@ function UploadPage() {
       const url = "http://192.168.4.90:30010/api/v1/";
 
       const formData = new FormData(); 
-      formData.append('filename', videoRef.current.file[0]);
+      formData.append('file', videoRef.current.files[0]);
 
       try {
-         const response = await axios.post(`${url}upload`, formData, {
+         const response = await axios.post(`${url}file`, formData2, {
             headers: {
+               // 'Authorization': `Bearer ${Cookies.get("accessToken")}`,
                'Content-Type': 'multipart/form-data',
             },
          }); 
 
-         if (!response.ok) return;
+         if (response.status !== 200) return;
 
          const data = await response.data;
 
@@ -64,15 +66,15 @@ function UploadPage() {
          formData2.append("title", title);
          formData2.append("description", description );
          formData2.append("videoUrl", data.fileUrl);
-         formData.append('filename', videoRef.current.file[0]);
+         formData.append('file', videoRef.current.files[0]);
 
-         const response2 = await axios.post(`${url}upload`, formData2, {
+         const response2 = await axios.post(`${url}video`, formData2, {
             headers: {
                'Content-Type': 'multipart/form-data',
             },
          }); 
 
-         if (!response2.ok) {
+         if (response.status !== 200) {
             setError("error");
             isLoading(false);
             return;
@@ -81,7 +83,8 @@ function UploadPage() {
          router.push("/library");
 
       } catch (error) {
-         console.error('Upload failed', error);
+         setError("error");
+         isLoading(false);
          return;
       }
 
@@ -111,7 +114,7 @@ function UploadPage() {
                   type="file"
                   id="thumbnail"
                   name="thumbnail"
-                  accept="image/jpg" // thumbnail image type
+                  accept="image/jpg, image/png, image/jpeg" // thumbnail image type
                   hidden
                />
             </label>
