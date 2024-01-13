@@ -1,6 +1,8 @@
 "use client";
 
+import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 function UploadPage() {
@@ -10,9 +12,10 @@ function UploadPage() {
 
    const videoRef = useRef(null);
    const thumbnailRef = useRef(null);
-   const [isPrivate, setIsPrivate] = useState(true);
 
-   function handleSubmit(e) {
+   const router = useRouter();
+
+   async function handleSubmit(e) {
       e.preventDefault();
 
       setIsLoading(true);
@@ -27,8 +30,8 @@ function UploadPage() {
          setIsLoading(false);
       }
 
-      const title = e.target[3].value;
-      const description = e.target[5].value;
+      const title = e.target[1].value;
+      const description = e.target[3].value;
 
       if (!title) {
          setError("No title uploaded!");
@@ -40,9 +43,47 @@ function UploadPage() {
          setIsLoading(false);
       }
 
-      const privacy = isPrivate ? "private" : "public";
+      const url = "http://192.168.4.90:30010/api/v1/";
 
-      // upload data
+      const formData = new FormData(); 
+      formData.append('filename', videoRef.current.file[0]);
+
+      try {
+         const response = await axios.post(`${url}upload`, formData, {
+            headers: {
+               'Content-Type': 'multipart/form-data',
+            },
+         }); 
+
+         if (!response.ok) return;
+
+         const data = await response.data;
+
+         const formData2 = new FormData(); 
+
+         formData2.append("title", title);
+         formData2.append("description", description );
+         formData2.append("videoUrl", data.fileUrl);
+         formData.append('filename', videoRef.current.file[0]);
+
+         const response2 = await axios.post(`${url}upload`, formData2, {
+            headers: {
+               'Content-Type': 'multipart/form-data',
+            },
+         }); 
+
+         if (!response2.ok) {
+            setError("error");
+            isLoading(false);
+            return;
+         }
+
+         router.push("/library");
+
+      } catch (error) {
+         console.error('Upload failed', error);
+         return;
+      }
 
    }
 
@@ -77,31 +118,6 @@ function UploadPage() {
          </div>
          <div className="mx-5">
             <form onSubmit={handleSubmit}>
-               <label className="block text-gray-900">Privacy</label>
-               <div className="flex mb-5 ml-1 mt-1">
-                  <label className="mr-3">
-                     <input
-                        type="radio"
-                        name="privacy"
-                        className="mr-1"
-                        value="public"
-                        checked={!isPrivate}
-                        onChange={() => setIsPrivate(false)}
-                     />
-                     Public
-                  </label>
-                  <label>
-                     <input
-                        type="radio"
-                        name="privacy"
-                        className="mr-1"
-                        value="private"
-                        checked={isPrivate}
-                        onChange={() => setIsPrivate(true)}
-                     />
-                     Private
-                  </label>
-               </div>
                <label htmlFor="title" className="w-fit block text-gray-900">Title</label>
                <input
                   required
