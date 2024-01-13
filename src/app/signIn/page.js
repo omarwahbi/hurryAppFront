@@ -30,7 +30,7 @@ const SignIn = () => {
     try {
       // Send sign-in data to the API
       const response = await fetch(
-        "https://hackathon-fhdh.onrender.com/api/users/login",
+        "http://192.168.4.90:30010/api/v1/auth/login",
         {
           method: "POST",
           headers: {
@@ -45,7 +45,10 @@ const SignIn = () => {
       if (response.ok) {
         setMessage("Sign-in successful!");
         Cookies.set("accessToken", data.token);
-        push("/home");
+        Cookies.set("username", data.user.name);
+        Cookies.set("userID", data.user.id);
+        push("/library");
+        console.log(response.data);
       } else {
         setMessage(`Sign-in failed: ${data.message}`);
         setEmail("");

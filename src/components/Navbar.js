@@ -1,14 +1,15 @@
 "use client";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import SignOut from "./Signout";
+import Link from "next/link";
 
 const navigation = [
   { name: "Library", href: "/library", current: true },
-  { name: "Upload video", href: "#", current: false },
-  { name: "Profile", href: "#", current: false },
-  { name: "About", href: "#", current: false },
+  { name: "Upload video", href: "/upload", current: false },
 ];
 
 function classNames(...classes) {
@@ -16,7 +17,14 @@ function classNames(...classes) {
 }
 
 export default function Example() {
-  return (
+  const [auth, setAuth] = useState(null);
+
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken");
+    setAuth(accessToken);
+  }, []);
+
+  return auth ? (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
         <>
@@ -66,11 +74,7 @@ export default function Example() {
                 <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                ></button>
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
@@ -98,39 +102,13 @@ export default function Example() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="#"
+                            href=""
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
                             )}
                           >
-                            Your Profile
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Sign out
+                            <SignOut />
                           </a>
                         )}
                       </Menu.Item>
@@ -139,6 +117,7 @@ export default function Example() {
                 </Menu>
               </div>
             </div>
+            {console.log(auth)}
           </div>
 
           <Disclosure.Panel className="sm:hidden">
@@ -161,6 +140,38 @@ export default function Example() {
               ))}
             </div>
           </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
+  ) : (
+    <Disclosure as="nav" className="bg-gray-800">
+      {({ open }) => (
+        <>
+          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            <div className="relative flex h-16 items-center justify-between">
+              <div className="flex flex-shrink-0 items-center">
+                <Image
+                  width={150}
+                  height={50}
+                  src="/assets/Screenshot__79_-removebg-preview.png"
+                />
+              </div>
+              <div>
+                <Link
+                  href={"/signIn"}
+                  className="text-gray-300 hover:text-white px-3 py-2"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href={"register"}
+                  className="text-gray-300 hover:text-white px-3 py-2"
+                >
+                  Register
+                </Link>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </Disclosure>

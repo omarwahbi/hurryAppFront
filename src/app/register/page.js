@@ -2,11 +2,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Cookies from "js-cookie";
 import "../globals.css";
 import Image from "next/image";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [name, setname] = useState("");
+  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const { push } = useRouter();
@@ -14,7 +16,7 @@ const Register = () => {
     e.preventDefault();
 
     // Validate form data
-    if (!email || !name || !password) {
+    if (!email || !name || !password || !username) {
       setMessage("Please fill in all fields.");
       return;
     }
@@ -24,12 +26,13 @@ const Register = () => {
       email,
       name,
       password,
+      username,
     };
 
     try {
       // Send registration data to the API
       const response = await fetch(
-        "https://hackathon-fhdh.onrender.com/api/users/signup",
+        "http://192.168.4.90:30010/api/v1/auth/register",
         {
           method: "POST",
           headers: {
@@ -43,7 +46,11 @@ const Register = () => {
       const data = await response.json();
       if (response.ok) {
         setMessage("Registration successful! Please log in.");
-        push("/signIn");
+        Cookies.set("accessToken", data.user.token);
+        Cookies.set("username", data.user.username);
+        Cookies.set("userID", data.user.id);
+        Cookies.set("name", data.user.name);
+        push("/library");
       } else {
         setMessage(`Registration failed: ${data.message}`);
       }
@@ -72,10 +79,28 @@ const Register = () => {
           <form className="space-y-6" method="POST" onSubmit={handleRegister}>
             <div>
               <label
-                htmlFor="name"
+                htmlFor="username"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 User name:
+              </label>
+              <div className="mt-2">
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                name
               </label>
               <div className="mt-2">
                 <input
